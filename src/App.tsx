@@ -8,8 +8,6 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactDOMClient from 'react-dom/client';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import styled, { createGlobalStyle } from 'styled-components';
-import MainPlayer from './videoPlayer';
-import shuffle from 'lodash/shuffle';
 import {
   useFocusable,
   init,
@@ -18,18 +16,10 @@ import {
   FocusableComponentLayout,
   KeyPressDetails
 } from './index';
-import SliderList from './SliderList';
-import AxiosInstance from './service/AxiosInstance';
+
 import ParserMedia from './service/parser';
-import AppData from './service/AppData';
 import SplashScreen from './SplashScreen';
-// import { mediaData } from './service/parser';
-// console.log(mediaData);
 let mediaData = [];
-
-
-// import SliderList from './SliderList';
-// import Image from 'react'
 
 const logo = require('./assets/logo.png').default;
 
@@ -58,7 +48,6 @@ const AssetWrapper = styled.div`
 
 interface AssetBoxProps {
   focused: boolean;
-  // color: string;
   source: string;
 }
 
@@ -93,7 +82,6 @@ const AssetTitle = styled.div`
 
 interface AssetProps {
   title: string;
-  // color: string;
   source: string;
   url: string,
   onEnterPress: (props: object, details: KeyPressDetails) => void;
@@ -104,7 +92,7 @@ interface AssetProps {
   ) => void;
 }
 
-function Asset({ title, source, onEnterPress, onFocus,url}: AssetProps) {
+function Asset({ title, source, onEnterPress, onFocus, url }: AssetProps) {
   const { ref, focused } = useFocusable({
     onEnterPress,
     onFocus
@@ -124,7 +112,6 @@ function Asset({ title, source, onEnterPress, onFocus,url}: AssetProps) {
 
 const ContentRowWrapper = styled.div`
   margin-bottom: 37px;
-
 `;
 
 const ContentRowTitle = styled.div`
@@ -150,7 +137,7 @@ const ContentRowScrollingContent = styled.div`
 `;
 
 interface ContentRowProps {
-  data :any []
+  data: any[]
   title: string;
   onAssetPress: (props: object, details: KeyPressDetails) => void;
   onFocus: (
@@ -162,25 +149,15 @@ interface ContentRowProps {
 
 
 function ContentRow({
-
-
-  data ,
+  data,
   title: rowTitle,
-
   onAssetPress,
   onFocus
 }: ContentRowProps) {
-
   const { ref, focusKey } = useFocusable({
     onFocus
   });
-
-
-  const [url, setUrl] = useState(null); // State to store the URL of the selected asset
-
-
   const scrollingRef = useRef(null);
-
   const [focusedItemTitle, setFocusedItemTitle] = useState("");
 
   const onAssetFocus = useCallback(
@@ -200,20 +177,14 @@ function ContentRow({
   }, [data]);
 
 
-  console.log(typeof data)
-
-  console.log("Asset data ",data)
-
-
   return (
     <FocusContext.Provider value={focusKey}>
       <ContentRowWrapper ref={ref}>
-
         <ContentRowTitle>{rowTitle}</ContentRowTitle>
         <ContentRowScrollingWrapper ref={scrollingRef}>
-        <ContentRowScrollingContent>
-        {data.map((item: any) =>
-                <Asset
+          <ContentRowScrollingContent>
+            {data.map((item: any) =>
+              <Asset
                 key={item.title}
                 title={item.title}
                 url={item.videoUrl}
@@ -221,10 +192,9 @@ function ContentRow({
                 onEnterPress={onAssetPress}
                 onFocus={onAssetFocus}
               />
-        )}
-
-</ContentRowScrollingContent>
-{focusedItemTitle && <div style={{color:"red" }}>{focusedItemTitle}</div>}
+            )}
+          </ContentRowScrollingContent>
+          {focusedItemTitle && <div style={{ color: "red" }}>{focusedItemTitle}</div>}
         </ContentRowScrollingWrapper>
       </ContentRowWrapper>
     </FocusContext.Provider>
@@ -281,24 +251,12 @@ const ScrollingRows = styled.div`
   flex-grow: 1;
 `;
 
-function Content(assest) {
+function Content() {
   const { ref, focusKey, focusSelf } = useFocusable();
 
   const [selectedAsset, setSelectedAsset] = useState(null);
-   const [videoUrl,setUrl] = useState(null);
   const onAssetPress = useCallback((asset: AssetProps) => {
-    setUrl(asset.url);
   }, []);
-  console.log("videoURl",mediaData);
-  useEffect(() => {
-    if (videoUrl) {
-      const playerElement = document.getElementById('mainPlayer');
-      if (playerElement) {
-        playerElement.focus();
-      }
-    }
-  }, [videoUrl]);
-
 
   useEffect(() => {
     setTimeout(() => {
@@ -318,14 +276,13 @@ function Content(assest) {
 
 
   const data = ParserMedia();
-  console.log("ParserMedia()", data)
+
   return (
     <FocusContext.Provider value={focusKey}>
       <ContentWrapper>
         <ContentTitle>
           <NmLogo src={logo} alt="GianTV" />
         </ContentTitle>
-        {videoUrl && <MainPlayer url={videoUrl} id="mainPlayer" />}
         <SelectedItemWrapper>
           <SelectedItemBox
             color={selectedAsset ? selectedAsset.color : '#565b6b'}
@@ -337,19 +294,18 @@ function Content(assest) {
           </SelectedItemTitle>
         </SelectedItemWrapper>
         <ScrollingRows ref={ref}>
-        <ScrollingRows ref={ref}>
-  {data.map((items: any) => (
-    <ContentRow
-
-      key={items.title}
-      data = {items.videos}
-      title={items.title}
-      onAssetPress={onAssetPress}
-      onFocus={onRowFocus}
-    />
-  ))}
-</ScrollingRows>
-</ScrollingRows>
+          <ScrollingRows ref={ref}>
+            {data.map((items: any) => (
+              <ContentRow
+                key={items.title}
+                data={items.videos}
+                title={items.title}
+                onAssetPress={onAssetPress}
+                onFocus={onRowFocus}
+              />
+            ))}
+          </ScrollingRows>
+        </ScrollingRows>
 
       </ContentWrapper>
     </FocusContext.Provider>
@@ -371,24 +327,22 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
-   const [view, setView] = useState(false);
+  const [view, setView] = useState(false);
 
-   useEffect(()=>{
-          setTimeout(() => {
-            setView(true);
-          }, 5000);
-   }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      setView(true);
+    }, 5000);
+  }, []);
 
   return (
     <React.StrictMode>
       <AppContainer>
-        {/* <ParserMedia/> */}
         <GlobalStyle />
         {
-          view ?   <Content mediaData={mediaData} /> : <SplashScreen/>
+          view ? <Content mediaData={mediaData} /> : <SplashScreen />
         }
-        {/* */}
-        </AppContainer>
+      </AppContainer>
     </React.StrictMode>
   );
 }
