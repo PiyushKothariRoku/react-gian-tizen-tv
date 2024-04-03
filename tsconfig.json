@@ -2,14 +2,15 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "dist",
-    "noImplicitAny": true,
-    "stripInternal": true,
+    "noImplicitAny": false,
+    "stripInternal": false,
     "module": "commonjs",
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "target": "ES5",
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs":true,
+    "checkJs": false,
     "lib": [
       "es5",
       "es2015",

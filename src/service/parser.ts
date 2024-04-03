@@ -1,18 +1,11 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AxiosInstance from "./AxiosInstance";
 
 let mediaData = [];
 function ParserMedia() {
   // Define models for MediaItem and Category
-
-
-
   const [categories, setCategories] = useState([]);
-
-
   useEffect(() => {
-
-
     const fetchData = async () => {
       try {
         const response = await AxiosInstance.get('/all-categories');
@@ -26,18 +19,15 @@ function ParserMedia() {
                 title: element.title,
                 thumbnail: element.image,
                 videoUrl: element.url,
+                videoDesc: [],
               };
             });
-            return { id: category.category.id, title: category.category.categoryName, videos:customArray, dataUrl: ""};
+            return { id: category.category.id, title: category.category.categoryName, videos: customArray, dataUrl: "" };
           } else {
 
-            return { id: category.category.id, title: category.category.categoryName, videos: [], dataUrl: category.streams[0].url};
+            return { id: category.category.id, title: category.category.categoryName, videos: [], dataUrl: category.streams[0].url };
           }
         });
-
-
-
-
 
         setCategories(parsedCategories);
 
@@ -53,8 +43,6 @@ function ParserMedia() {
         console.error('Error fetching data:', error);
       }
 
-
-
     };
 
     const fetchVODItems = async (id, url, parsedCategories) => {
@@ -62,42 +50,30 @@ function ParserMedia() {
         const response = await fetch(url);
         const data = await response.json();
 
-
         const filteredCategory = parsedCategories.filter(category => category.id === id);
 
-
         if (data.movies != null) {
-          const moviesVideos = data.movies.map(movie =>{ return { id: movie.id, title: movie.title, thumbnail: movie.thumbnail, videoUrl:movie.content.videos[0].url}});
+          const moviesVideos = data.movies.map(movie => { return { id: movie.id, title: movie.title, thumbnail: movie.thumbnail, videoUrl: movie.content.videos[0].url, videoDesc: movie } });
           filteredCategory[0].videos = moviesVideos;
 
         }
         if (data.shortFormVideos != null) {
-          const shortFormVideos = data.shortFormVideos.map(shortFormVideos => { return { id: shortFormVideos.id, title: shortFormVideos.title, thumbnail: shortFormVideos.thumbnail, videoUrl:shortFormVideos.content.videos[0].url}});
+          const shortFormVideos = data.shortFormVideos.map(shortFormVideos => { return { id: shortFormVideos.id, title: shortFormVideos.title, thumbnail: shortFormVideos.thumbnail, videoUrl: shortFormVideos.content.videos[0].url, videoDesc: shortFormVideos } });
           filteredCategory[0].videos = shortFormVideos;
 
         }
-
-
         setCategories(parsedCategories);
         mediaData = parsedCategories;
-
-
-
-
-
-
       } catch (error) {
         console.error('Error fetching additional info:', error);
       }
-
     };
 
     fetchData();
 
-
   }, []);
 
-  return  mediaData;
+  return mediaData;
 }
 
 
