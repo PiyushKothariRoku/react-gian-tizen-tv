@@ -15,6 +15,11 @@ export namespace module {
         loader?: undefined;
     } | {
         test: RegExp;
+        use: string[];
+        exclude?: undefined;
+        loader?: undefined;
+    } | {
+        test: RegExp;
         loader: string;
         exclude: RegExp;
         use?: undefined;

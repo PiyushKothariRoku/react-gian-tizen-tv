@@ -13,9 +13,10 @@ import {
 import ContentRow from './ContentRow';
 const logo = require('../assets/logo.png').default;
 import { useMyContext } from '../hooks/MyContext';
-import { convertSecondsToMinAndSec } from '../utils/utils';
+import { convertSecondsToMinAndSec, hasCustomProperty, getYearFromStringFormat } from '../utils/utils';
 import Popup from './Popup'
 import MainPlayer from './VideoPlayer';
+
 
 const NmLogo = styled.img`
   height: 120px;
@@ -161,13 +162,11 @@ function Content() {
   }, [focusSelf]);
 
   const onRowFocus = useCallback(
-    ({ y }: { y: number }, title: string) => {
+    ({ y }: { y: number },) => {
       ref.current.scrollTo({
         top: y,
         behavior: 'smooth'
       });
-      // console.log(title);
-      // setFocusedAsset("hello");
     },
     [ref]
   );
@@ -191,21 +190,22 @@ function Content() {
         <SelectedItemWrapper>
           <TopContentDetailBox>
             <TopContentDetailTitle>
-              {value ? value.title : ''}
+              {hasCustomProperty(value, "title")}
             </TopContentDetailTitle>
             <TopContentDetailDesc>
-              {value.videoDesc ? value.videoDesc.shortDescription : ''}
+            {(typeof value === 'object' && "videoDesc" in value) ? hasCustomProperty(value.videoDesc, "shortDescription") : ''}
+              {/* {value.videoDesc ? value.videoDesc.shortDescription : ''} */}
             </TopContentDetailDesc>
             <TopContentDetailDesc>
-              {value.videoDesc ? (value.videoDesc.genres ? `${value.videoDesc.genres.join(', ')} | ` : '') : ''}
-              {value.videoDesc ? (value.videoDesc.releaseDate ? `${new Date(value.videoDesc.releaseDate).getFullYear()} |` : '') : ''}
-              {value.videoDesc ? (value.videoDesc.genres ? convertSecondsToMinAndSec(value.videoDesc.content.duration) : '') : ''}
+              {(typeof value === 'object' && "videoDesc" in value) ? hasCustomProperty(value.videoDesc, "genres") : ''}
+              {getYearFromStringFormat(value, "releaseDate")}
+              {(typeof value === 'object' && "videoDesc" in value) && ((typeof value.videoDesc === 'object' && "content" in value.videoDesc) ? ((typeof value.videoDesc.content == "object" && "duration" in value.videoDesc.content) && convertSecondsToMinAndSec(value.videoDesc.content.duration)) : '')}
             </TopContentDetailDesc>
           </TopContentDetailBox>
           <SelectedItemBox
-            color={selectedAsset ? selectedAsset.color : '#565b6b'}
+            color='#565b6b'
           >
-            <TopThumbnail crossOrigin="anonymous" src={value.source} alt={value ? value.title : ''} />
+            <TopThumbnail crossOrigin="anonymous" src={hasCustomProperty(value, "source")} alt={hasCustomProperty(value, "title")} />
             <ThumbnailOverlay />
           </SelectedItemBox>
         </SelectedItemWrapper>
